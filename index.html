@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゴミ分別チャレンジ！</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .screen { display: none; min-height: 100vh; padding: 20px; }
+
+        /* ===== START SCREEN ===== */
+        #startScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+
+        .game-title {
+            font-size: 2.8em;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .game-subtitle {
+            font-size: 1.05em;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .tricky-note {
+            display: inline-block;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid rgba(255,215,0,0.5);
+            color: #ffd700;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 0.9em;
+            margin-bottom: 40px;
+        }
+
+        .categories-preview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 36px;
+            max-width: 420px;
+        }
+
+        .cat-chip {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 18px 64px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245,87,108,0.5);
+            transition: all 0.25s;
+        }
+
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(245,87,108,0.6); }
+        .start-btn:active { transform: translateY(0); }
+
+        /* ===== GAME SCREEN ===== */
+        #gameScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-header {
+            width: 100%;
+            max-width: 860px;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .game-header h2 {
+            color: white;
+            font-size: 1.4em;
+            margin-bottom: 12px;
+        }
+
+        .progress-wrap {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43e97b, #38f9d7);
+            border-radius: 5px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            color: rgba(255,255,255,0.9);
+            margin-top: 6px;
+            font-size: 0.9em;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            width: 100%;
+            max-width: 860px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 700px) {
+            .items-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 701px) and (max-width: 860px) {
+            .items-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 18px;
+            padding: 16px 10px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.18s, box-shadow 0.18s, border-color 0.2s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            border: 3px solid transparent;
+            position: relative;
+            user-select: none;
+        }
+
+        .item-card:hover { transform: translateY(-6px); box-shadow: 0 10px 28px rgba(0,0,0,0.25); }
+        .item-card:active { transform: translateY(-2px); }
+
+        .item-card.assigned { border-color: var(--cc, #ccc); }
+
+        .tricky-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ffd700;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.95em;
+            line-height: 28px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+
+        .item-emoji { font-size: 2.6em; margin-bottom: 8px; display: block; }
+        .item-name { font-size: 0.82em; font-weight: 700; color: #2c3e50; margin-bottom: 8px; line-height: 1.3; }
+
+        .item-badge {
+            font-size: 0.68em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .item-unset {
+            font-size: 0.7em;
+            color: #bbb;
+            border: 1.5px dashed #ddd;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            border: none;
+            padding: 15px 52px;
+            border-radius: 50px;
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(67,233,123,0.45);
+            transition: all 0.25s;
+        }
+
+        .submit-btn:disabled {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.4);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .submit-btn:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(67,233,123,0.55);
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 26px 22px 22px;
+            width: 100%;
+            max-width: 400px;
+            animation: popIn 0.25s ease;
+            position: relative;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.88); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.4em;
+            cursor: pointer;
+            color: #aaa;
+            line-height: 1;
+        }
+
+        .modal-close:hover { color: #555; }
+
+        .modal-item {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-item-emoji { font-size: 3.2em; display: block; margin-bottom: 6px; }
+        .modal-item-name { font-size: 1.25em; font-weight: 800; color: #2c3e50; }
+        .modal-item-tricky {
+            display: inline-block;
+            background: #fff8e1;
+            color: #e67e00;
+            font-size: 0.78em;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .modal-question {
+            text-align: center;
+            color: #777;
+            margin-bottom: 14px;
+            font-size: 0.92em;
+            font-weight: 600;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 9px;
+        }
+
+        .category-btn {
+            padding: 12px 8px;
+            border: 2.5px solid transparent;
+            border-radius: 14px;
+            font-size: 0.82em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+        }
+
+        .category-btn:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+        .category-btn:active { transform: scale(0.98); }
+        .category-btn .cat-emoji { font-size: 1.6em; }
+
+        /* ===== RESULTS SCREEN ===== */
+        #resultsScreen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .score-display {
+            font-size: 5em;
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 8px 32px;
+            border-radius: 50px;
+            font-size: 1.4em;
+            font-weight: 900;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+
+        .grade-S { background: linear-gradient(135deg, #ffd700, #ff8c00); color: white; }
+        .grade-A { background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; }
+        .grade-B { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .grade-C { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .grade-D { background: linear-gradient(135deg, #a8a8a8, #666); color: white; }
+
+        .results-comment {
+            color: rgba(255,255,255,0.92);
+            font-size: 1.05em;
+        }
+
+        .results-list {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            background: white;
+            border-radius: 18px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeSlide 0.4s ease both;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item.wrong { border-left: 5px solid #e74c3c; }
+        .result-item.correct { border-left: 5px solid #2ecc71; }
+
+        .result-header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item-emoji { font-size: 1.9em; flex-shrink: 0; }
+        .result-item-name { font-weight: 700; font-size: 1em; flex: 1; color: #2c3e50; }
+        .result-status-icon { font-size: 1.5em; flex-shrink: 0; }
+
+        .result-answers {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ans-badge {
+            font-size: 0.75em;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .ans-correct { background: #eafaf1; color: #1e8449; }
+        .ans-wrong { background: #fdecea; color: #c0392b; }
+        .ans-answer { background: #eaf4fb; color: #1a6ca0; }
+
+        .result-explanation {
+            font-size: 0.85em;
+            color: #555;
+            line-height: 1.65;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 52px;
+            border-radius: 50px;
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(245,87,108,0.45);
+            transition: all 0.25s;
+            margin-bottom: 40px;
+        }
+
+        .retry-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(245,87,108,0.55); }
+
+        /* confetti for high scores */
+        .confetti {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            border-radius: 2px;
+            animation: fall linear both;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen" class="screen">
+    <div class="logo">♻️</div>
+    <h1 class="game-title">ゴミ分別<br>チャレンジ！</h1>
+    <p class="game-subtitle">
+        10個のゴミを正しい分類に振り分けよう！<br>
+        間違えやすい難問も多数出題されます。
+    </p>
+    <div class="tricky-note">⚡ マーク = 特に間違えやすい要注意ゴミ</div>
+    <div class="categories-preview" id="categoriesPreview"></div>
+    <button class="start-btn" onclick="startGame()">ゲームスタート 🎮</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="screen">
+    <div class="game-header">
+        <h2>どのゴミ箱に入れる？</h2>
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0/10 分別済み</div>
+        </div>
+    </div>
+    <div class="items-grid" id="itemsGrid"></div>
+    <button class="submit-btn" id="submitBtn" disabled onclick="submitAnswers()">
+        📊 結果を見る
+    </button>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div id="resultsScreen" class="screen">
+    <div class="results-header">
+        <div class="score-display" id="scoreDisplay">0/10</div>
+        <div class="grade-badge" id="gradeBadge">-</div>
+        <div class="results-comment" id="resultsComment"></div>
+    </div>
+    <div class="results-list" id="resultsList"></div>
+    <button class="retry-btn" onclick="restartGame()">もう一度挑戦！ 🔄</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-item">
+            <span class="modal-item-emoji" id="modalEmoji"></span>
+            <div class="modal-item-name" id="modalName"></div>
+            <div id="modalTrickyNote"></div>
+        </div>
+        <div class="modal-question">どのゴミ箱に入れますか？</div>
+        <div class="category-grid" id="categoryGrid"></div>
+    </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+// ===== DATA =====
+
+const categories = [
+    { id: 'burnable',     name: '燃えるゴミ',     emoji: '🔥', color: '#e74c3c', bg: '#fdecea', text: '#c0392b' },
+    { id: 'non-burnable', name: '燃えないゴミ',   emoji: '🚫', color: '#7f8c8d', bg: '#eaecef', text: '#5d6d7e' },
+    { id: 'pet',          name: 'ペットボトル',   emoji: '♻️', color: '#2980b9', bg: '#eaf4fb', text: '#1a6ca0' },
+    { id: 'paper',        name: '古紙回収',       emoji: '📰', color: '#d35400', bg: '#fef5e7', text: '#a84300' },
+    { id: 'can-bottle',   name: '缶・瓶',         emoji: '🥫', color: '#27ae60', bg: '#eafaf1', text: '#1e8449' },
+    { id: 'hazardous',    name: '有害ごみ',       emoji: '⚠️', color: '#8e44ad', bg: '#f5eef8', text: '#6c3483' },
+];
+
+// Always shown (tricky items)
+const trickyItems = [
+    {
+        id: 2, name: '乾電池', emoji: '🔋', correct: 'hazardous', tricky: true,
+        explanation: '乾電池には水銀・鉛・カドミウムなどの有害物質が含まれます。「燃えないゴミ」と間違えやすいですが、有害ごみとして専用の回収ボックスへ。スーパーや家電量販店の回収ボックスも利用できます。'
+    },
+    {
+        id: 3, name: 'ゴム手袋', emoji: '🧤', correct: 'burnable', tricky: true,
+        explanation: 'ゴム製品は「燃えるゴミ」です！「燃えないゴミ」と思いがちですが、ゴムは有機物で燃えるため燃えるゴミが正解。消しゴム・ゴムボールなども同様に燃えるゴミです。'
+    },
+    {
+        id: 5, name: 'スプレー缶', emoji: '🫧', correct: 'non-burnable', tricky: true,
+        explanation: 'スプレー缶は「缶・瓶」の回収ではなく燃えないゴミです。中身を使い切り、火気のない屋外で穴を開けてから出しましょう（自治体によっては穴不要の場合も）。絶対に火の中に捨てないこと！'
+    },
+    {
+        id: 6, name: '蛍光灯', emoji: '💡', correct: 'hazardous', tricky: true,
+        explanation: '蛍光灯には水銀が含まれるため有害ごみです。「燃えないゴミ」と間違えやすい！専用の回収窓口やスーパーの回収箱へ。なおLED電球は燃えないゴミの自治体が多いです（有害物質なし）。'
+    },
+    {
+        id: 7, name: 'プラスチックトレー', emoji: '🍱', correct: 'burnable', tricky: true,
+        explanation: 'スーパーのプラスチックトレーや一般的なプラスチック製品は多くの自治体で燃えるゴミです。「プラ＝燃えないゴミ」と思いがちですが現代の焼却炉で処理できます。「プラ」マークがある場合は資源回収の自治体もあるので確認を。'
+    },
+    {
+        id: 10, name: '使い捨てライター', emoji: '🕯️', correct: 'non-burnable', tricky: true,
+        explanation: '使い捨てライターはガスを抜いてから燃えないゴミへ。水の中で「シュー」と音がしなくなるまでガスを出し切ってから捨てましょう。ガスが残ったまま捨てると爆発・火災の危険があります！'
+    },
+];
+
+// Pool to randomly pick 4 from
+const normalItems = [
+    {
+        id: 1, name: 'ペットボトル', emoji: '🧴', correct: 'pet', tricky: false,
+        explanation: 'ペットボトルはペットボトル専用の回収へ。キャップとラベルを外し、中をすすいでから出しましょう。ボトル底面の「PET」マークが目印です。'
+    },
+    {
+        id: 4, name: '雑誌', emoji: '📚', correct: 'paper', tricky: false,
+        explanation: '雑誌・週刊誌は古紙回収へ。束ねてひもで縛って出しましょう。ビニールカバーがある場合は外す必要がある場合があります。'
+    },
+    {
+        id: 8, name: '割れた茶碗', emoji: '🍵', correct: 'non-burnable', tricky: false,
+        explanation: '陶器・磁器は燃えないゴミです。割れた場合は厚紙や新聞紙で包み、「危険・割れ物」と書いてから出しましょう。怪我防止のためしっかり包むことが大切です。'
+    },
+    {
+        id: 9, name: '牛乳パック', emoji: '🥛', correct: 'paper', tricky: false,
+        explanation: '牛乳パック（紙パック）は古紙回収へ。洗って乾かし、切り開いてから束ねて出しましょう。スーパーや学校の店頭回収も活用できます。段ボール・新聞紙とは分けて出す場合があります。'
+    },
+    {
+        id: 11, name: 'アルミ缶', emoji: '🥫', correct: 'can-bottle', tricky: false,
+        explanation: 'アルミ缶・スチール缶は缶・瓶の回収へ。軽くすすいでから出しましょう。磁石に付くのがスチール缶、付かないのがアルミ缶です。どちらも同じ回収で大丈夫です。'
+    },
+    {
+        id: 12, name: '段ボール', emoji: '📦', correct: 'paper', tricky: false,
+        explanation: '段ボールは古紙回収へ。平らにたたみ、ひもで縛って出しましょう。雨に濡れるとリサイクルしにくくなるので、雨の日の前日は避けて出すのがベターです。'
+    },
+    {
+        id: 13, name: '野菜くず', emoji: '🥦', correct: 'burnable', tricky: false,
+        explanation: '生ごみ（野菜くず・食べ残しなど）は燃えるゴミです。水気をよく切ってから出すと重量が減り、臭いや汁漏れも防げます。生ごみコンパストを利用するとさらに環境に優しいです。'
+    },
+    {
+        id: 14, name: 'ガラス瓶', emoji: '🫙', correct: 'can-bottle', tricky: false,
+        explanation: 'ガラス瓶は缶・瓶の回収へ。中をすすいでフタを外してから出しましょう。自治体によっては色別（無色・茶色・その他）に分ける場合があります。割れた場合は燃えないゴミとして紙に包んで出す自治体もあります。'
+    },
+];
+
+// ===== STATE =====
+let selectedItems = [];
+let userAnswers = {};
+let currentItemId = null;
+
+// ===== HELPERS =====
+function getCat(id) { return categories.find(c => c.id === id); }
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===== GAME INIT =====
+function initStartScreen() {
+    const preview = document.getElementById('categoriesPreview');
+    preview.innerHTML = categories.map(c =>
+        `<span class="cat-chip" style="background:${c.bg};color:${c.text};border-color:${c.color};">
+            ${c.emoji} ${c.name}
+         </span>`
+    ).join('');
+}
+
+function startGame() {
+    userAnswers = {};
+    currentItemId = null;
+    // Always include all 6 tricky, plus 4 random from normal pool
+    const picked = shuffle(normalItems).slice(0, 4);
+    selectedItems = shuffle([...trickyItems, ...picked]);
+    showScreen('gameScreen');
+    renderItems();
+    updateProgress();
+}
+
+// ===== ITEM CARDS =====
+function renderItems() {
+    const grid = document.getElementById('itemsGrid');
+    grid.innerHTML = selectedItems.map(item => {
+        const ans = userAnswers[item.id];
+        const cat = ans ? getCat(ans) : null;
+        return `
+            <div class="item-card ${ans ? 'assigned' : ''}"
+                 id="card-${item.id}"
+                 onclick="openModal(${item.id})"
+                 style="${cat ? `--cc: ${cat.color}` : ''}">
+                ${item.tricky ? '<div class="tricky-badge">⚡</div>' : ''}
+                <span class="item-emoji">${item.emoji}</span>
+                <div class="item-name">${item.name}</div>
+                ${cat
+                    ? `<span class="item-badge" style="background:${cat.bg};color:${cat.text};">${cat.emoji} ${cat.name}</span>`
+                    : `<span class="item-unset">タップして分別</span>`
+                }
+            </div>`;
+    }).join('');
+}
+
+function updateProgress() {
+    const done = Object.keys(userAnswers).length;
+    const total = selectedItems.length;
+    document.getElementById('progressFill').style.width = (done / total * 100) + '%';
+    document.getElementById('progressText').textContent = `${done}/${total} 分別済み`;
+    document.getElementById('submitBtn').disabled = done < total;
+}
+
+// ===== MODAL =====
+function openModal(itemId) {
+    currentItemId = itemId;
+    const item = selectedItems.find(i => i.id === itemId);
+    document.getElementById('modalEmoji').textContent = item.emoji;
+    document.getElementById('modalName').textContent = item.name;
+    document.getElementById('modalTrickyNote').innerHTML = item.tricky
+        ? '<span class="modal-item-tricky">⚡ 要注意！間違えやすいゴミです</span>' : '';
+
+    const grid = document.getElementById('categoryGrid');
+    grid.innerHTML = categories.map(cat => `
+        <button class="category-btn"
+                style="background:${cat.bg};border-color:${cat.color};color:${cat.text};"
+                onclick="selectCategory('${cat.id}')">
+            <span class="cat-emoji">${cat.emoji}</span>
+            <span>${cat.name}</span>
+        </button>`
+    ).join('');
+
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    currentItemId = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+function selectCategory(catId) {
+    if (currentItemId === null) return;
+    userAnswers[currentItemId] = catId;
+    closeModal();
+    renderItems();
+    updateProgress();
+
+    // Brief card highlight animation
+    const card = document.getElementById(`card-${currentItemId}`);
+    if (card) {
+        card.style.transition = 'transform 0.1s';
+        card.style.transform = 'scale(1.08)';
+        setTimeout(() => { card.style.transform = ''; }, 150);
+    }
+}
+
+// ===== RESULTS =====
+function submitAnswers() {
+    showScreen('resultsScreen');
+    renderResults();
+}
+
+function renderResults() {
+    let score = 0;
+    selectedItems.forEach(item => { if (userAnswers[item.id] === item.correct) score++; });
+    const total = selectedItems.length;
+
+    document.getElementById('scoreDisplay').textContent = `${score}/${total}`;
+
+    let grade, comment;
+    if (score === total)    { grade = 'S'; comment = '🏆 完璧！分別マスターです！'; }
+    else if (score >= 8)    { grade = 'A'; comment = '🎉 素晴らしい！ほぼ正確です'; }
+    else if (score >= 6)    { grade = 'B'; comment = '👍 なかなかいい！あと少しで完璧'; }
+    else if (score >= 4)    { grade = 'C'; comment = '🤔 半分正解！難しいゴミがありましたね'; }
+    else                    { grade = 'D'; comment = '📖 要練習！解説をよく読んでみましょう'; }
+
+    const badge = document.getElementById('gradeBadge');
+    badge.textContent = `ランク ${grade}`;
+    badge.className = `grade-badge grade-${grade}`;
+    document.getElementById('resultsComment').textContent = comment;
+
+    const list = document.getElementById('resultsList');
+    list.innerHTML = selectedItems.map((item, idx) => {
+        const isOk = userAnswers[item.id] === item.correct;
+        const userCat = getCat(userAnswers[item.id]);
+        const correctCat = getCat(item.correct);
+        return `
+            <div class="result-item ${isOk ? 'correct' : 'wrong'}"
+                 style="animation-delay: ${idx * 0.06}s">
+                <div class="result-header-row">
+                    <span class="result-item-emoji">${item.emoji}</span>
+                    <span class="result-item-name">${item.name}${item.tricky ? ' ⚡' : ''}</span>
+                    <span class="result-status-icon">${isOk ? '✅' : '❌'}</span>
+                </div>
+                <div class="result-answers">
+                    <span class="ans-badge ${isOk ? 'ans-correct' : 'ans-wrong'}">
+                        あなた: ${userCat.emoji} ${userCat.name}
+                    </span>
+                    ${!isOk ? `<span class="ans-badge ans-answer">正解: ${correctCat.emoji} ${correctCat.name}</span>` : ''}
+                </div>
+                <div class="result-explanation">${item.explanation}</div>
+            </div>`;
+    }).join('');
+
+    if (score >= 8) spawnConfetti();
+}
+
+function restartGame() {
+    document.getElementById('confetti').innerHTML = '';
+    showScreen('startScreen');
+}
+
+// ===== CONFETTI =====
+function spawnConfetti() {
+    const container = document.getElementById('confetti');
+    container.innerHTML = '';
+    const colors = ['#ffd700','#ff6b6b','#43e97b','#4facfe','#f093fb','#38f9d7'];
+    for (let i = 0; i < 60; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDuration = (2 + Math.random() * 2) + 's';
+        p.style.animationDelay = Math.random() * 1.5 + 's';
+        p.style.width = (8 + Math.random() * 8) + 'px';
+        p.style.height = (8 + Math.random() * 8) + 'px';
+        p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        container.appendChild(p);
+    }
+    setTimeout(() => { container.innerHTML = ''; }, 5000);
+}
+
+// ===== INIT =====
+initStartScreen();
+showScreen('startScreen');
+</script>
+</body>
+</html>
