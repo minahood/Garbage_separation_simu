@@ -254,23 +254,35 @@ const CATS = [
 ];
 
 const TRICKY = [
-    { id:2,  name:'乾電池',           emoji:'🔋', correct:'hazardous',    tricky:true, explanation:'乾電池には水銀・鉛・カドミウムなど有害物質が含まれます。「燃えないゴミ」と間違えやすいですが、有害ごみとして専用の回収ボックスへ。スーパーや家電量販店の回収ボックスも利用できます。' },
-    { id:3,  name:'ゴム手袋',         emoji:'🧤', correct:'burnable',     tricky:true, explanation:'ゴム製品は「燃えるゴミ」です！「燃えないゴミ」と思いがちですが、ゴムは有機物で燃えるため燃えるゴミが正解。消しゴム・ゴムボールも同様です。' },
-    { id:5,  name:'スプレー缶',       emoji:'🫧', correct:'non-burnable', tricky:true, explanation:'スプレー缶は「缶・瓶」ではなく燃えないゴミです。中身を使い切り、火気のない場所で穴を開けてから出しましょう。絶対に火の中に捨てないこと！' },
-    { id:6,  name:'蛍光灯',           emoji:'💡', correct:'hazardous',    tricky:true, explanation:'蛍光灯には水銀が含まれるため有害ごみです。「燃えないゴミ」と間違えやすい！専用の回収窓口へ。LED電球は燃えないゴミの自治体が多いです。' },
-    { id:7,  name:'プラスチックトレー', emoji:'🍱', correct:'burnable',   tricky:true, explanation:'スーパーのプラスチックトレーは多くの自治体で燃えるゴミです。「プラ＝燃えないゴミ」は誤解！現代の焼却炉で処理できます。「プラ」マーク付きは資源回収の自治体もあります。' },
-    { id:10, name:'使い捨てライター', emoji:'🕯️', correct:'non-burnable', tricky:true, explanation:'ガスを抜いてから燃えないゴミへ。水の中で音がしなくなるまでガスを出し切ってから捨てましょう。ガスが残ったまま捨てると爆発・火災の危険があります！' },
+    { id:2,  name:'乾電池',             emoji:'🔋', correct:'hazardous',    tricky:true, explanation:'乾電池には水銀・鉛・カドミウムなど有害物質が含まれます。「燃えないゴミ」と間違えやすいですが、有害ごみとして専用の回収ボックスへ。スーパーや家電量販店の回収ボックスも利用できます。' },
+    { id:3,  name:'ゴム手袋',           emoji:'🧤', correct:'burnable',     tricky:true, explanation:'ゴム製品は「燃えるゴミ」です！「燃えないゴミ」と思いがちですが、ゴムは有機物で燃えるため燃えるゴミが正解。消しゴム・ゴムボールも同様です。' },
+    { id:5,  name:'スプレー缶',         emoji:'🫧', correct:'non-burnable', tricky:true, explanation:'スプレー缶は「缶・瓶」ではなく燃えないゴミです。中身を使い切り、火気のない場所で穴を開けてから出しましょう。絶対に火の中に捨てないこと！' },
+    { id:6,  name:'蛍光灯',             emoji:'💡', correct:'hazardous',    tricky:true, explanation:'蛍光灯には水銀が含まれるため有害ごみです。「燃えないゴミ」と間違えやすい！専用の回収窓口へ。LED電球は燃えないゴミの自治体が多いです。' },
+    { id:7,  name:'プラスチックトレー', emoji:'🍱', correct:'burnable',     tricky:true, explanation:'スーパーのプラスチックトレーは多くの自治体で燃えるゴミです。「プラ＝燃えないゴミ」は誤解！現代の焼却炉で処理できます。「プラ」マーク付きは資源回収の自治体もあります。' },
+    { id:10, name:'使い捨てライター',   emoji:'🕯️', correct:'non-burnable', tricky:true, explanation:'ガスを抜いてから燃えないゴミへ。水の中で音がしなくなるまでガスを出し切ってから捨てましょう。ガスが残ったまま捨てると爆発・火災の危険があります！' },
+    { id:15, name:'水銀体温計',         emoji:'🌡️', correct:'hazardous',    tricky:true, explanation:'水銀体温計は水銀を含む有害ごみです。割れると水銀が蒸発し健康被害の恐れがあります。「燃えないゴミ」と間違えやすいですが、必ず自治体の専用回収窓口へ。デジタル体温計は燃えないゴミです。' },
+    { id:16, name:'発泡スチロール',     emoji:'🧊', correct:'burnable',     tricky:true, explanation:'発泡スチロールは「燃えるゴミ」です！見た目からプラスチックと思い燃えないゴミと間違えがちですが、ポリスチレン樹脂は燃やせる素材で多くの自治体で燃えるゴミ扱いです。魚箱などの大きいものは粗大ごみの場合も。' },
+    { id:17, name:'ボタン電池',         emoji:'🪙', correct:'hazardous',    tricky:true, explanation:'ボタン電池・コイン電池には水銀・リチウムなど有害物質が含まれます。乾電池と同様に有害ごみです。時計・補聴器などに使われ、家電量販店や時計店の回収ボックスへ持ち込みましょう。' },
+    { id:18, name:'傘',                 emoji:'☂️', correct:'non-burnable', tricky:true, explanation:'傘は金属製の骨・プラスチック・布が混在するため燃えないゴミです。布と骨を分解すれば分別できる場合もありますが、まとめて燃えないゴミに出すのが一般的。自治体によっては粗大ごみ扱いになる場合も。' },
+    { id:19, name:'革靴',               emoji:'👞', correct:'burnable',     tricky:true, explanation:'革（レザー）は天然素材で燃えるゴミです！「革＝頑丈・燃えなそう」というイメージから燃えないゴミと思いがちですが、皮革は有機物なので燃えるゴミが正解。布靴も燃えるゴミです。' },
+    { id:20, name:'マニキュア',         emoji:'💅', correct:'hazardous',    tricky:true, explanation:'マニキュア（ネイルポリッシュ）は有機溶剤を含む有害ごみです。ビンが空でも有機溶剤が付着しているため通常のゴミとして捨てられません。除光液（アセトン）も同様に有害ごみ扱いです。' },
 ];
 
 const NORMAL = [
-    { id:1,  name:'ペットボトル', emoji:'🧴', correct:'pet',          tricky:false, explanation:'キャップとラベルを外し、中をすすいでペットボトル専用の回収へ。底面の「PET」マークが目印です。' },
-    { id:4,  name:'雑誌',         emoji:'📚', correct:'paper',        tricky:false, explanation:'雑誌・週刊誌は古紙回収へ。束ねてひもで縛って出しましょう。ビニールカバーは外す場合があります。' },
-    { id:8,  name:'割れた茶碗',   emoji:'🍵', correct:'non-burnable', tricky:false, explanation:'陶器・磁器は燃えないゴミです。割れた場合は厚紙で包み「危険・割れ物」と書いてから出しましょう。' },
-    { id:9,  name:'牛乳パック',   emoji:'🥛', correct:'paper',        tricky:false, explanation:'紙パックは古紙回収へ。洗って乾かし、切り開いてから束ねて出しましょう。店頭回収も活用できます。' },
-    { id:11, name:'アルミ缶',     emoji:'🥫', correct:'can-bottle',   tricky:false, explanation:'アルミ缶・スチール缶は缶・瓶の回収へ。軽くすすいでから出しましょう。どちらも同じ回収で大丈夫です。' },
-    { id:12, name:'段ボール',     emoji:'📦', correct:'paper',        tricky:false, explanation:'段ボールは古紙回収へ。平らにたたみひもで縛って出しましょう。雨に濡れるとリサイクルしにくくなります。' },
-    { id:13, name:'野菜くず',     emoji:'🥦', correct:'burnable',     tricky:false, explanation:'生ごみは燃えるゴミです。水気をよく切ってから出すと重量が減り、臭いや汁漏れも防げます。' },
-    { id:14, name:'ガラス瓶',     emoji:'🫙', correct:'can-bottle',   tricky:false, explanation:'ガラス瓶は缶・瓶の回収へ。中をすすいでフタを外してから出しましょう。自治体によっては色別に分ける場合があります。' },
+    { id:1,  name:'ペットボトル',   emoji:'🧴', correct:'pet',          tricky:false, explanation:'キャップとラベルを外し、中をすすいでペットボトル専用の回収へ。底面の「PET」マークが目印です。' },
+    { id:4,  name:'雑誌',           emoji:'📚', correct:'paper',        tricky:false, explanation:'雑誌・週刊誌は古紙回収へ。束ねてひもで縛って出しましょう。ビニールカバーは外す場合があります。' },
+    { id:8,  name:'割れた茶碗',     emoji:'🍵', correct:'non-burnable', tricky:false, explanation:'陶器・磁器は燃えないゴミです。割れた場合は厚紙で包み「危険・割れ物」と書いてから出しましょう。' },
+    { id:9,  name:'牛乳パック',     emoji:'🥛', correct:'paper',        tricky:false, explanation:'紙パックは古紙回収へ。洗って乾かし、切り開いてから束ねて出しましょう。店頭回収も活用できます。' },
+    { id:11, name:'アルミ缶',       emoji:'🥫', correct:'can-bottle',   tricky:false, explanation:'アルミ缶・スチール缶は缶・瓶の回収へ。軽くすすいでから出しましょう。どちらも同じ回収で大丈夫です。' },
+    { id:12, name:'段ボール',       emoji:'📦', correct:'paper',        tricky:false, explanation:'段ボールは古紙回収へ。平らにたたみひもで縛って出しましょう。雨に濡れるとリサイクルしにくくなります。' },
+    { id:13, name:'野菜くず',       emoji:'🥦', correct:'burnable',     tricky:false, explanation:'生ごみは燃えるゴミです。水気をよく切ってから出すと重量が減り、臭いや汁漏れも防げます。' },
+    { id:14, name:'ガラス瓶',       emoji:'🫙', correct:'can-bottle',   tricky:false, explanation:'ガラス瓶は缶・瓶の回収へ。中をすすいでフタを外してから出しましょう。自治体によっては色別に分ける場合があります。' },
+    { id:21, name:'新聞紙',         emoji:'📰', correct:'paper',        tricky:false, explanation:'新聞紙は古紙回収です。ひもで束ねて出しましょう。濡れるとリサイクルできなくなるので注意。チラシ・コピー用紙も古紙回収です。' },
+    { id:22, name:'レジ袋',         emoji:'🛍️', correct:'burnable',     tricky:false, explanation:'レジ袋・ポリ袋などのビニール袋類は燃えるゴミです。多くの自治体でプラスチックごみでなく燃えるゴミに分類されています。' },
+    { id:23, name:'紙コップ',       emoji:'🥤', correct:'burnable',     tricky:false, explanation:'紙コップは燃えるゴミです。「紙＝古紙回収」と思いがちですが、内側にポリエチレンがコーティングされているためリサイクルできず、燃えるゴミです。' },
+    { id:24, name:'ワインボトル',   emoji:'🍾', correct:'can-bottle',   tricky:false, explanation:'ガラス製のワインボトルは缶・瓶の回収へ。中を軽くすすいでキャップを外してから出しましょう。自治体によって透明・茶・その他と色分けが必要な場合があります。' },
+    { id:25, name:'割り箸',         emoji:'🥢', correct:'burnable',     tricky:false, explanation:'割り箸は木製なので燃えるゴミです。竹製の箸も燃えるゴミです。プラスチック箸も燃えるゴミ。一緒に袋に入れてそのまま出せます。' },
+    { id:26, name:'古着・衣類',     emoji:'👕', correct:'burnable',     tricky:false, explanation:'古着・衣類は多くの自治体で燃えるゴミです。ただし地域によっては資源回収・古着ボックスがある場合も。まだ着られるものは寄付や古着店へどうぞ。' },
 ];
 
 let items = [], answers = {}, dragId = null, touchId = null, hoverBin = null;
@@ -298,7 +310,7 @@ function initStart() {
 
 function startGame() {
     answers={}; dragId=null; touchId=null; hoverBin=null;
-    items = shuffle([...TRICKY, ...shuffle(NORMAL).slice(0,4)]);
+    items = shuffle([...TRICKY, ...shuffle(NORMAL).slice(0,2)]);
     showScreen('gameScreen');
     renderAll(); updateProgress();
 }
