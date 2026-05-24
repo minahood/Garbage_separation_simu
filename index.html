@@ -81,14 +81,21 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #43e97b, #38f9d7); border-radius: 4px; transition: width 0.4s ease; width: 0%; }
         .progress-text { color: rgba(255,255,255,0.85); margin-top: 5px; font-size: 0.85em; }
 
-        .game-main { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+        .game-main { display: flex; flex-direction: column; gap: 16px; width: 100%; }
 
-        .items-section { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 8px; }
+        .section-label { color: rgba(255,255,255,0.65); font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
 
-        .section-label { color: rgba(255,255,255,0.65); font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+        /* ── 未分別プール ── */
+        .pool-section { width: 100%; }
+        .items-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
-        .items-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        /* ── ソートエリア（横スクロール対応） ── */
+        .sort-area { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .sort-columns { display: flex; gap: 8px; min-width: max-content; width: 100%; }
 
+        .sort-col { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 100px; }
+
+        /* ── アイテムカード ── */
         .item-card {
             background: white; border-radius: 13px;
             padding: 10px 6px 8px; text-align: center;
@@ -99,38 +106,38 @@
         }
         .item-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
         .item-card.is-dragging { opacity: 0.25; cursor: grabbing; box-shadow: none; }
-        .item-card.assigned { border-color: var(--cc, #ccc); }
 
-.item-emoji { font-size: 1.7em; display: block; margin-bottom: 4px; }
-
+        .item-emoji { font-size: 1.7em; display: block; margin-bottom: 4px; }
         .item-name { font-size: 0.65em; font-weight: 700; color: #2c3e50; line-height: 1.2; }
-
         .item-bar { display: block; width: 100%; height: 4px; border-radius: 2px; margin-top: 5px; background: var(--cc, transparent); }
 
-        .bins-section { width: 100%; max-width: 700px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .bins-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 65%; }
-
+        /* ── ゴミ箱（列ヘッダー） ── */
         .bin {
-            border: 2.5px dashed rgba(255,255,255,0.25); border-radius: 16px;
-            padding: 14px 8px 12px; text-align: center;
+            border: 2.5px dashed rgba(255,255,255,0.25); border-radius: 14px;
+            padding: 10px 6px 8px; text-align: center;
             transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, filter 0.15s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 5px; min-height: 92px;
+            gap: 4px; cursor: default;
         }
-        @media (max-width: 767px) { .bin { min-height: 72px; padding: 10px 5px 8px; } }
-
         .bin.drag-over {
             border-style: solid; border-width: 3px;
-            transform: scale(1.06); box-shadow: 0 8px 28px rgba(0,0,0,0.4); filter: brightness(1.15);
+            transform: scale(1.04); box-shadow: 0 8px 28px rgba(0,0,0,0.4); filter: brightness(1.15);
         }
+        .bin-emoji { font-size: 1.5em; line-height: 1; }
+        .bin-name { font-size: 0.68em; font-weight: 700; color: white; line-height: 1.2; }
 
-        .bin-emoji { font-size: 1.7em; line-height: 1; }
-        @media (max-width: 767px) { .bin-emoji { font-size: 1.4em; } }
-
-        .bin-name { font-size: 0.73em; font-weight: 700; color: white; line-height: 1.2; }
-        @media (max-width: 767px) { .bin-name { font-size: 0.62em; } }
-
-        .bin-count { font-size: 0.65em; font-weight: 700; padding: 1px 8px; border-radius: 10px; }
+        /* ── ドロップゾーン（ゴミ箱の下） ── */
+        .sorted-drop-zone {
+            flex: 1; min-height: 70px;
+            display: flex; flex-direction: column; gap: 6px; align-items: stretch;
+            padding: 6px; border-radius: 12px;
+            border: 2px dashed rgba(255,255,255,0.1);
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .sorted-drop-zone.drag-over {
+            border-style: solid; border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.05);
+        }
 
         .submit-wrap { text-align: center; margin-top: 14px; }
 
@@ -205,13 +212,13 @@
         </div>
     </div>
     <div class="game-main">
-        <div class="items-section">
+        <div class="pool-section">
             <div class="section-label">▼ 分別するゴミ</div>
-            <div class="items-grid" id="itemsGrid"></div>
+            <div class="items-pool" id="itemsPool"></div>
         </div>
-        <div class="bins-section">
-            <div class="section-label">▼ ゴミ箱</div>
-            <div class="bins-grid" id="binsGrid"></div>
+        <div class="sort-area">
+            <div class="section-label">▼ ゴミ箱へドラッグ</div>
+            <div class="sort-columns" id="sortColumns"></div>
         </div>
     </div>
     <div class="submit-wrap">
@@ -293,53 +300,69 @@ function startGame() {
     answers={}; dragId=null; touchId=null; hoverBin=null;
     items = shuffle([...TRICKY, ...shuffle(NORMAL).slice(0,4)]);
     showScreen('gameScreen');
-    renderBins(); renderItems(); updateProgress();
+    renderAll(); updateProgress();
 }
 
-function renderBins() {
-    const grid = $('binsGrid');
-    grid.innerHTML = CATS.map(c => {
-        const cnt = Object.values(answers).filter(v=>v===c.id).length;
-        return `<div class="bin" id="bin-${c.id}" data-cat="${c.id}" style="background:${c.bg}22;border-color:${c.color}66;">
-            <span class="bin-emoji">${c.emoji}</span>
-            <span class="bin-name" style="color:${c.text};">${c.name}</span>
-            ${cnt?`<span class="bin-count" style="background:${c.bg};color:${c.text};">${cnt}個</span>`:''}
-        </div>`;
-    }).join('');
-    grid.querySelectorAll('.bin').forEach(bin => {
-        const cid = bin.dataset.cat;
-        bin.addEventListener('dragover',  e => { e.preventDefault(); setHoverBin(cid); });
-        bin.addEventListener('dragleave', e => { if (!bin.contains(e.relatedTarget)) clearHoverBin(cid); });
-        bin.addEventListener('drop',      e => { e.preventDefault(); dropOnBin(cid); });
+function itemCardHTML(item) {
+    return `<div class="item-card" id="card-${item.id}" data-id="${item.id}" draggable="true">
+        <span class="item-emoji">${item.emoji}</span>
+        <div class="item-name">${item.name}</div>
+        <span class="item-bar"></span>
+    </div>`;
+}
+
+function attachCardEvents(card) {
+    const id = parseInt(card.dataset.id);
+    card.addEventListener('dragstart', e => {
+        dragId = id;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(id));
+        setTimeout(() => card.classList.add('is-dragging'), 0);
     });
+    card.addEventListener('dragend', () => {
+        card.classList.remove('is-dragging');
+        dragId = null;
+        clearAllHovers();
+    });
+    card.addEventListener('touchstart', onTouchStart, { passive: false });
+    card.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    card.addEventListener('touchend',   onTouchEnd,   { passive: false });
 }
 
-function renderItems() {
-    const grid = $('itemsGrid');
-    grid.innerHTML = items.map(item => {
-        const c = answers[item.id] ? cat(answers[item.id]) : null;
-        return `<div class="item-card ${c?'assigned':''}" id="card-${item.id}" data-id="${item.id}" draggable="true" style="${c?`--cc:${c.color}`:''}">
-            <span class="item-emoji">${item.emoji}</span>
-            <div class="item-name">${item.name}</div>
-            <span class="item-bar"></span>
+function attachDropZone(el, cid) {
+    el.addEventListener('dragover',  e => { e.preventDefault(); setHoverBin(cid); });
+    el.addEventListener('dragleave', e => { if (!el.contains(e.relatedTarget)) clearHoverBin(cid); });
+    el.addEventListener('drop',      e => { e.preventDefault(); dropOnBin(cid); });
+}
+
+function renderAll() {
+    // プール（未分別）
+    const pool = $('itemsPool');
+    const unsorted = items.filter(i => !answers[i.id]);
+    pool.innerHTML = unsorted.map(itemCardHTML).join('');
+    pool.querySelectorAll('.item-card').forEach(attachCardEvents);
+
+    // ソートカラム（ゴミ箱 + 分別済みアイテム）
+    const cols = $('sortColumns');
+    cols.innerHTML = CATS.map(c => {
+        const sorted = items.filter(i => answers[i.id] === c.id);
+        return `<div class="sort-col">
+            <div class="bin" id="bin-${c.id}" data-cat="${c.id}" style="background:${c.bg}22;border-color:${c.color}66;">
+                <span class="bin-emoji">${c.emoji}</span>
+                <span class="bin-name" style="color:${c.text};">${c.name}</span>
+            </div>
+            <div class="sorted-drop-zone" id="zone-${c.id}" data-cat="${c.id}">
+                ${sorted.map(itemCardHTML).join('')}
+            </div>
         </div>`;
     }).join('');
-    grid.querySelectorAll('.item-card').forEach(card => {
-        const id = parseInt(card.dataset.id);
-        card.addEventListener('dragstart', e => {
-            dragId = id;
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', String(id));
-            setTimeout(() => card.classList.add('is-dragging'), 0);
-        });
-        card.addEventListener('dragend', () => {
-            card.classList.remove('is-dragging');
-            dragId = null;
-            clearAllHovers();
-        });
-        card.addEventListener('touchstart', onTouchStart, { passive: false });
-        card.addEventListener('touchmove',  onTouchMove,  { passive: false });
-        card.addEventListener('touchend',   onTouchEnd,   { passive: false });
+
+    // ドロップ: bin と zone の両方を受け付ける
+    CATS.forEach(c => {
+        attachDropZone($(`bin-${c.id}`), c.id);
+        const zone = $(`zone-${c.id}`);
+        attachDropZone(zone, c.id);
+        zone.querySelectorAll('.item-card').forEach(attachCardEvents);
     });
 }
 
@@ -347,19 +370,17 @@ function setHoverBin(cid) {
     if (hoverBin === cid) return;
     clearAllHovers();
     hoverBin = cid;
-    const el = $(`bin-${cid}`);
-    if (el) el.classList.add('drag-over');
+    [$(`bin-${cid}`), $(`zone-${cid}`)].forEach(el => el?.classList.add('drag-over'));
 }
 
 function clearHoverBin(cid) {
     hoverBin = null;
-    const el = $(`bin-${cid}`);
-    if (el) el.classList.remove('drag-over');
+    [$(`bin-${cid}`), $(`zone-${cid}`)].forEach(el => el?.classList.remove('drag-over'));
 }
 
 function clearAllHovers() {
     hoverBin = null;
-    document.querySelectorAll('.bin.drag-over').forEach(b => b.classList.remove('drag-over'));
+    document.querySelectorAll('.bin.drag-over, .sorted-drop-zone.drag-over').forEach(b => b.classList.remove('drag-over'));
 }
 
 function dropOnBin(cid) {
@@ -369,7 +390,7 @@ function dropOnBin(cid) {
     answers[id] = cid;
     const bin = $(`bin-${cid}`);
     if (bin) { bin.style.transform='scale(1.1)'; setTimeout(()=>{ bin.style.transform=''; },160); }
-    renderItems(); renderBins(); updateProgress();
+    renderAll(); updateProgress();
 }
 
 const ghost = $('dragGhost');
@@ -396,7 +417,7 @@ function onTouchMove(e) {
     ghost.style.visibility = 'hidden';
     const el = document.elementFromPoint(t.clientX, t.clientY);
     ghost.style.visibility = 'visible';
-    const bin = el?.closest?.('.bin');
+    const bin = el?.closest?.('.bin') || el?.closest?.('.sorted-drop-zone');
     const cid = bin?.dataset?.cat ?? null;
     if (cid !== hoverBin) { clearAllHovers(); if (cid) { hoverBin=cid; bin.classList.add('drag-over'); } }
 }
