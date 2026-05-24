@@ -42,14 +42,7 @@
             margin-bottom: 10px; line-height: 1.8;
         }
 
-        .tricky-note {
-            display: inline-block;
-            background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.5);
-            color: #ffd700; border-radius: 20px; padding: 6px 16px;
-            font-size: 0.88em; margin-bottom: 8px;
-        }
-
-        .drag-note {
+.drag-note {
             display: inline-block;
             background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75);
             border-radius: 20px; padding: 6px 16px;
@@ -108,14 +101,7 @@
         .item-card.is-dragging { opacity: 0.25; cursor: grabbing; box-shadow: none; }
         .item-card.assigned { border-color: var(--cc, #ccc); }
 
-        .tricky-badge {
-            position: absolute; top: -8px; right: -8px;
-            background: #ffd700; border-radius: 50%;
-            width: 22px; height: 22px; font-size: 0.72em;
-            line-height: 22px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-
-        .item-emoji { font-size: 1.7em; display: block; margin-bottom: 4px; }
+.item-emoji { font-size: 1.7em; display: block; margin-bottom: 4px; }
 
         .item-name { font-size: 0.65em; font-weight: 700; color: #2c3e50; line-height: 1.2; }
 
@@ -205,8 +191,7 @@
     <div class="logo">♻️</div>
     <h1 class="game-title">ゴミ分別<br>チャレンジ！</h1>
     <p class="game-subtitle">ゴミをドラッグして正しいゴミ箱へ！<br>間違えやすい難問も多数あります。</p>
-    <div class="tricky-note">⚡ マーク = 特に間違えやすい要注意ゴミ</div>
-    <div class="drag-note">🖱️ ドラッグ ／ 📱 長押しドラッグで分別</div>
+<div class="drag-note">🖱️ ドラッグ ／ 📱 長押しドラッグで分別</div>
     <div class="categories-preview" id="categoriesPreview"></div>
     <button class="start-btn" onclick="startGame()">ゲームスタート 🎮</button>
 </div>
@@ -334,7 +319,6 @@ function renderItems() {
     grid.innerHTML = items.map(item => {
         const c = answers[item.id] ? cat(answers[item.id]) : null;
         return `<div class="item-card ${c?'assigned':''}" id="card-${item.id}" data-id="${item.id}" draggable="true" style="${c?`--cc:${c.color}`:''}">
-            ${item.tricky?'<div class="tricky-badge">⚡</div>':''}
             <span class="item-emoji">${item.emoji}</span>
             <div class="item-name">${item.name}</div>
             <span class="item-bar"></span>
@@ -462,7 +446,7 @@ function submitAnswers() {
     $('resultsList').innerHTML = items.map((item,idx) => {
         const ok=answers[item.id]===item.correct, uc=cat(answers[item.id]), cc=cat(item.correct);
         return `<div class="result-item ${ok?'correct':'wrong'}" style="animation-delay:${idx*0.06}s">
-            <div class="result-row"><span class="r-emoji">${item.emoji}</span><span class="r-name">${item.name}${item.tricky?' ⚡':''}</span><span class="r-icon">${ok?'✅':'❌'}</span></div>
+            <div class="result-row"><span class="r-emoji">${item.emoji}</span><span class="r-name">${item.name}</span><span class="r-icon">${ok?'✅':'❌'}</span></div>
             <div class="result-answers"><span class="ans ${ok?'ans-ok':'ans-wrong'}">あなた: ${uc.emoji} ${uc.name}</span>${!ok?`<span class="ans ans-answer">正解: ${cc.emoji} ${cc.name}</span>`:''}</div>
             <div class="result-explanation">${item.explanation}</div>
         </div>`;
